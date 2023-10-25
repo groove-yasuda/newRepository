@@ -8,6 +8,10 @@
 
 
                 <template>
+                    <p v-if="isLoading && !is_Condition_Met">
+                        ローディング中...
+                    </p>
+
                     <p v-if="is_Condition_Met">
                         <v-container>
                             <v-row>
@@ -55,7 +59,7 @@
                             </v-row>
                         </v-container>
                     </p>
-                    <p v-else>検索結果が存在しません</p>
+                    <p v-if="!isLoading && !is_Condition_Met">検索結果が存在しません</p>
                 </template>
 
             </v-container>
@@ -125,7 +129,8 @@
                 search_Target: '',
                 response_Data: [],
                 syainID: '',
-                is_Condition_Met: false,
+                is_Condition_Met: '',
+                isLoading: true,
                 desserts: [],
                 headers: [
                     { text: '社員ID' },
@@ -219,103 +224,119 @@
                     }
                 })
                 .then((response) => {
-                    const data = response.data; // レスポンスデータを取得
+                    if (response.data && "key0" in response.data && "key1" in response.data) {
+                        const data = response.data; // レスポンスデータを取得
 
-                    const list_Employee_Information = data["key0"]; // "key0"のリストを取得
-                    const list_Deduction = data["key1"]; // "key1"のリストを取得
+                        const list_Employee_Information = data["key0"]; // "key0"のリストを取得
+                        const list_Deduction = data["key1"]; // "key1"のリストを取得
 
-                    let sousikyu;
+                        let sousikyu;
+                        let Age;
 
 
-                    list_Employee_Information.forEach((item) => {
-                        const parts = item.split(", ");
-                        const syainID = parts[0].split("=")[1];
-                        const syainNAME = parts[1].split("=")[1];
-                        const birth = parts[2].split("=")[1];
-                        const age = parts[3].split("=")[1];
-                        const gender = parts[4].split("=")[1];
+                        list_Employee_Information.forEach((item) => {
+                            const parts = item.split(", ");
+                            const syainID = parts[0].split("=")[1];
+                            const syainNAME = parts[1].split("=")[1];
+                            const birth = parts[2].split("=")[1];
+                            const age = parts[3].split("=")[1];
+                            const gender = parts[4].split("=")[1];
 
-                        this.desserts.push({
-                            '社員ID': syainID,
-                            '社員名': syainNAME,
-                            '生年月日': birth,
-                            '年齢': age,
-                            '性別': gender,
+                            this.desserts.push({
+                                '社員ID': syainID,
+                                '社員名': syainNAME,
+                                '生年月日': birth,
+                                '年齢': age,
+                                '性別': gender,
+                            });
+
+                            const basic_salary = parseFloat(parts[5].split("=")[1]);
+                            const Transportation_expenses = parseFloat(parts[6].split("=")[1]);
+                            const overtime_pay = parseFloat(parts[7].split("=")[1]);
+                            const Fixed_overtime_pay = parseFloat(parts[8].split("=")[1]);
+
+                            this.salary_Data[1][0] = `¥${basic_salary.toLocaleString()}`;
+                            this.salary_Data[1][1] = `¥${Transportation_expenses.toLocaleString()}`;
+                            this.salary_Data[1][2] = `¥${overtime_pay.toLocaleString()}`;
+                            this.salary_Data[1][3] = `¥${Fixed_overtime_pay.toLocaleString()}`;
+                            this.salary_Data[1][4] = `¥${(basic_salary + Transportation_expenses + overtime_pay + Fixed_overtime_pay).toLocaleString()}`;
+
+                            sousikyu = basic_salary + Transportation_expenses + overtime_pay + Fixed_overtime_pay;
+                            Age = age;
+
+
+
+                            const employment = parseFloat(parts[9].split("=")[1]);
+                            const attendance_At_Work = parseFloat(parts[10].split("=")[1]);
+                            const work = parts[11].split("=")[1];
+                            const absenteeism = parseFloat(parts[12].split("=")[1]);
+                            const overtime = parts[13].split("=")[1];
+                            const holiday_Work = parts[14].split("=")[1];
+
+
+
+
+                            this.is_Condition_Met = true;
+                            this.isLoading = false;
+
+                            this.attendance_Data[1][0] = employment + ' 日';
+                            this.attendance_Data[1][1] = attendance_At_Work + ' 日';
+                            this.attendance_Data[1][2] = work + ' 時間';
+                            this.attendance_Data[1][3] = holiday_Work + ' 日';
+                            this.attendance_Data[3][0] = overtime + ' 時間';
+                            this.attendance_Data[3][1] = absenteeism + ' 日';
                         });
 
-                        const basic_salary = parseFloat(parts[5].split("=")[1]);
-                        const Transportation_expenses = parseFloat(parts[6].split("=")[1]);
-                        const overtime_pay = parseFloat(parts[7].split("=")[1]);
-                        const Fixed_overtime_pay = parseFloat(parts[8].split("=")[1]);
+                        list_Deduction.forEach((item) => {
+                            const parts = item.split(", ");
+                            const employment_Insurance_Rate = parseFloat(parts[0].split("=")[1]);
+                            const welfare_Pension_Insurancehoken = parseFloat(parts[1].split("=")[1]);
+                            const insurance_Rate_Nursing = parseFloat(parts[2].split("=")[1]);
+                            const insurance_Rate_Medical = parseFloat(parts[3].split("=")[1]);
+                            const income_Tax_Basis = parseFloat(parts[4].split("=")[1]);
+                            const resident_Tax_Basics = parseFloat(parts[5].split("=")[1]);
+                            const income_Tax_Rate = parseFloat(parts[6].split("=")[1]);
+                            const resident_Tax_Rate = parseFloat(parts[7].split("=")[1]);
+                            const deduction = parseFloat(parts[8].split("=")[1]);
+                            const employment_Insurance = sousikyu * employment_Insurance_Rate * 0.01;
+                            let health_Insurance_Nursing = 0;
+                            if (Age >= 40) {
+                                health_Insurance_Nursing = sousikyu * insurance_Rate_Nursing * 0.5 * 0.01;
+                            }
+                            const health_Insurance_Medical = sousikyu * insurance_Rate_Medical * 0.5 * 0.01;
+                            const health_Insurance = health_Insurance_Nursing + health_Insurance_Medical;
+                            const welfare_Pension_Insurance = sousikyu * welfare_Pension_Insurancehoken * 0.5 * 0.01;//
+                            const employment_Income = (sousikyu * 12) - deduction;
+                            const taxable_Salary_Income = (employment_Income - income_Tax_Basis - (welfare_Pension_Insurance * 12) - (health_Insurance * 12) - (employment_Insurance * 12)) / 12;
+                            const income_Tax = taxable_Salary_Income * income_Tax_Rate * 0.01;
+                            const taxable_Salary_residents = (employment_Income - resident_Tax_Basics - (welfare_Pension_Insurance * 12) - (health_Insurance * 12) - (employment_Insurance * 12)) / 12;
+                            const resident_Tax = taxable_Salary_residents * resident_Tax_Rate * 0.01;
+                            const social_Insurance = employment_Insurance + health_Insurance + welfare_Pension_Insurance;
+                            const tax_Amount = income_Tax + resident_Tax;
+                            const deduction_Amount = social_Insurance + tax_Amount;
+                            const deduction_Payment_Amount = sousikyu - deduction_Amount;
 
-                        this.salary_Data[1][0] = `¥${basic_salary.toLocaleString()}`;
-                        this.salary_Data[1][1] = `¥${Transportation_expenses.toLocaleString()}`;
-                        this.salary_Data[1][2] = `¥${overtime_pay.toLocaleString()}`;
-                        this.salary_Data[1][3] = `¥${Fixed_overtime_pay.toLocaleString()}`;
-                        this.salary_Data[1][4] = `¥${(basic_salary + Transportation_expenses + overtime_pay + Fixed_overtime_pay).toLocaleString()}`;
+                            this.deduction_Data[1][0] = `¥${employment_Insurance.toLocaleString()}`;//雇用保険
+                            this.deduction_Data[1][1] = `¥${health_Insurance.toLocaleString()}`;//健康保険
+                            this.deduction_Data[1][2] = `¥${Math.ceil(welfare_Pension_Insurance).toLocaleString()}`;//厚生年金
+                            this.deduction_Data[1][4] = `¥${Math.ceil(social_Insurance).toLocaleString()}`;//社会保険合計
+                            this.deduction_Data[3][0] = `¥${Math.ceil(income_Tax).toLocaleString()}`;//所得税
+                            this.deduction_Data[3][1] = `¥${Math.ceil(resident_Tax).toLocaleString()}`;//住民税
+                            this.deduction_Data[3][4] = `¥${Math.ceil(tax_Amount).toLocaleString()}`;//税額合計
 
-                        sousikyu = basic_salary + Transportation_expenses + overtime_pay + Fixed_overtime_pay;
+                            this.total_Data[1][0] = `¥${Math.ceil(sousikyu).toLocaleString()}`;//総支給額
+                            this.total_Data[1][2] = `¥${Math.ceil(deduction_Amount).toLocaleString()}`;//税額合計
+                            this.total_Data[1][4] = `¥${Math.ceil(deduction_Payment_Amount).toLocaleString()}`;//税額合計
 
-
-
-                        const employment = parseFloat(parts[9].split("=")[1]);
-                        const attendance_At_Work = parseFloat(parts[10].split("=")[1]);
-                        const work = parts[11].split("=")[1];
-                        const absenteeism = parseFloat(parts[12].split("=")[1]);
-                        const overtime = parts[13].split("=")[1];
-                        const holiday_Work = parts[14].split("=")[1];
+                        });
 
 
-
-
-                        this.is_Condition_Met = true;
-
-                        this.attendance_Data[1][0] = employment + ' 日';
-                        this.attendance_Data[1][1] = attendance_At_Work + ' 日';
-                        this.attendance_Data[1][2] = work + ' 時間';
-                        this.attendance_Data[1][3] = holiday_Work + ' 日';
-                        this.attendance_Data[3][0] = overtime + ' 時間';
-                        this.attendance_Data[3][1] = absenteeism + ' 日';
-                    });
-
-                    list_Deduction.forEach((item) => {
-                        const parts = item.split(", ");
-                        const employment_Insurance_Rate = parseFloat(parts[0].split("=")[1]);
-                        const welfare_Pension_Insurancehoken = parseFloat(parts[1].split("=")[1]);
-                        const insurance_Rate_Medical = parseFloat(parts[3].split("=")[1]);
-                        const income_Tax_Basis = parseFloat(parts[4].split("=")[1]);
-                        const resident_Tax_Basics = parseFloat(parts[5].split("=")[1]);
-                        const income_Tax_Rate = parseFloat(parts[6].split("=")[1]);
-                        const resident_Tax_Rate = parseFloat(parts[7].split("=")[1]);
-                        const deduction = parseFloat(parts[8].split("=")[1]);
-                        const employment_Insurance = sousikyu * employment_Insurance_Rate * 0.01;
-                        const health_Insurance = sousikyu * insurance_Rate_Medical * 0.5 * 0.01;
-                        const welfare_Pension_Insurance = sousikyu * welfare_Pension_Insurancehoken * 0.5 * 0.01;//
-                        const employment_Income = (sousikyu * 12) - deduction;
-                        const taxable_Salary_Income = (employment_Income - income_Tax_Basis - (welfare_Pension_Insurance * 12) - (health_Insurance * 12) - (employment_Insurance * 12))/12;
-                        const income_Tax = taxable_Salary_Income * income_Tax_Rate *0.01;
-                        const taxable_Salary_residents = (employment_Income - resident_Tax_Basics - (welfare_Pension_Insurance * 12) - (health_Insurance * 12) - (employment_Insurance * 12))/12;
-                        const resident_Tax = taxable_Salary_residents * resident_Tax_Rate * 0.01;
-                        const social_Insurance = employment_Insurance + health_Insurance + welfare_Pension_Insurance;
-                        const tax_Amount = income_Tax + resident_Tax;
-                        const deduction_Amount = social_Insurance + tax_Amount;
-                        const deduction_Payment_Amount = sousikyu - deduction_Amount;
-
-                        this.deduction_Data[1][0] = `¥${employment_Insurance.toLocaleString()}`;//雇用保険
-                        this.deduction_Data[1][1] = `¥${health_Insurance.toLocaleString()}`;//健康保険
-                        this.deduction_Data[1][2] = `¥${Math.ceil(welfare_Pension_Insurance).toLocaleString()}`;//厚生年金
-                        this.deduction_Data[1][4] = `¥${Math.ceil(social_Insurance).toLocaleString()}`;//社会保険合計
-                        this.deduction_Data[3][0] = `¥${Math.ceil(income_Tax).toLocaleString()}`;//所得税
-                        this.deduction_Data[3][1] = `¥${Math.ceil(resident_Tax).toLocaleString()}`;//住民税
-                        this.deduction_Data[3][4] = `¥${Math.ceil(tax_Amount).toLocaleString()}`;//税額合計
-
-                        this.total_Data[1][0] = `¥${Math.ceil(sousikyu).toLocaleString()}`;//総支給額
-                        this.total_Data[1][2] = `¥${Math.ceil(deduction_Amount).toLocaleString()}`;//税額合計
-                        this.total_Data[1][4] = `¥${Math.ceil(deduction_Payment_Amount).toLocaleString()}`;//税額合計
-
-                    });
-
+                    } else {
+                        this.isLoading = false;
+                        this.is_Condition_Met = false;
+                    }
                 })
+
         },
         methods: {
 

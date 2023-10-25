@@ -7,47 +7,41 @@
                 <p>社員情報削除</p>
                 <p>削除対象入力画面</p>
 
+                <input-field label="社員ID" v-model="input_Emp_Id" :hint="Id_Hint" :error="id_Error" />
+                <input-field label="社員名" v-model="input_Emp_Name" :hint="Name_Hint" :error="name_Error" />
 
-                    <v-text-field label="社員ID" clearable v-model="input_Emp_Id" @input="check_Emp_Id" counter="4"
-                                  hint=" 社員IDをA001～Z999の間の半角英数字で入力して下さい。
-                              *社員IDは大文字のアルファベット＋三桁の数字の組み合わせです"
-                                  :rules="[id_Max_Char]" class="custom-hint-style"></v-text-field>
-                    <p v-if="id_Error" class="error-message">有効な社員IDを入力してください。</p>
+                <p v-if="error_Message" class="error-message">{{ error_Message }}</p>
 
-                    <v-text-field label="社員名" clearable v-model="input_Emp_Name" @input="check_Emp_Name" counter="255"
-                                  hint="社員名を255文字以内の全角文字で入力して下さい"
-                                  :rules="[name_Max_Char]" class="custom-hint-style"></v-text-field>
-                    <p v-if="name_Error" class="error-message">有効な社員名を入力してください。</p>
 
-            </v-container>
-            <br>
-            <v-row justify="center">
-                <div>
-                    <label for="year">生年月日:</label>
-                    <select v-model="selected_Year" id="year" class="select-Dropdown">
-                        <option v-for="year in year_Range" :value="year" :key="year">{{ year }}</option>
-                    </select>年
+                <br>
+                <v-row justify="center">
+                    <div>
+                        <select_Dropdown v-model="selected_Year"
+                                         label="生年月日:" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="year_Range" />
+                    </div>
+                    <div>
+                        <select_Dropdown v-model="selected_Month"
+                                         label="/" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="months" />
+                    </div>
+                    <div>
+                        <select_Dropdown v-model="selected_Day"
+                                         label="/" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="day_Range" />
+                    </div>
 
-                    <label for="month"></label>
-                    <select v-model="selected_Month" id="month" class="select-Dropdown">
-                        <option v-for="month in months" :value="month" :key="month">{{ month }}</option>
-                    </select>月
-
-                    <label for="day"></label>
-                    <select v-model="selected_Day" id="day" class="select-Dropdown">
-                        <option v-for="day in day_Range" :value="day" :key="day">{{ day }}</option>
-                    </select>日
-                </div>
-            </v-row>
-            <br><br>
-
+                </v-row>
+                <br><br>
                 <v-row justify="center">
                     <v-col cols="auto">
-                        <v-btn v-on:click="DELETE" :disabled="name_Error || id_Error ||
-                           !input_Emp_Id || !input_Emp_Name">削除</v-btn>
+                        <v-btn v-on:click="DELETE">削除</v-btn>
                     </v-col>
                 </v-row>
-
+            </v-container>
         </v-main>
     </v-app>
 </template>
@@ -76,9 +70,18 @@
 </style>
 
 <script>
+    import InputField from '@/components/input_Field.vue';
+    import select_Dropdown from '@/components/select_Dropdown.vue';
+
     export default {
+        components: {
+            InputField,
+            select_Dropdown,
+        },
         data() {
             return {
+                Id_Hint: '社員IDをA001～Z999の間の半角英数字で入力して下さい * 社員IDは大文字のアルファベット＋三桁の数字の組み合わせです',
+                Name_Hint: '社員名を255文字以内の全角文字で入力して下さい',
                 input_Emp_Id: '',
                 id_Error: false,
                 input_Emp_Name: '', 
@@ -89,8 +92,13 @@
                 selected_Year: 2000, // 選択された年
                 selected_Month: 1, // 選択された月
                 selected_Day: 1, // 選択された日
-                birth:'',
+                birth: '',
+                error_Message: '',
             };
+        },
+        created() {
+            // ルーターからパラメータを取得してデータに代入
+            this.error_Message = this.$route.params.error_Message;
         },
         computed: {
             year_Range() {
@@ -103,42 +111,27 @@
             },
         },
         methods: {
-            id_Max_Char(value) {
-                if (value.length <= 4) {
-                    return true;
-                } else {
-                    return '社員IDは4文字以下で入力してください';
-                }
-            },
-            name_Max_Char(value) {
-                if (value.length <= 255) {
-                    return true; 
-                } else {
-                    return '社員名は255文字以下で入力してください'; 
-                }
-            },
-            check_Emp_Id() {
-                if (!/^[一-龯ぁ-んァ-ヶー]*$/.test(this.input_Emp_Id)) {
-                    if (!/[A-Z]{1}[0-9]{3}/.test(this.input_Emp_Id) || !/^(?!.*000).+$/.test(this.input_Emp_Id)) {
-                        this.id_Error = true;
-                    } else {
-                        this.id_Error = false;
-                    }
-                } else {
+            DELETE() {
+                const birth = this.selected_Year + '/' + this.selected_Month + '/' + this.selected_Day;
+                let hasError = false;
+
+                if (!/^[A-Z]{1}[0-9]{3}$/.test(this.input_Emp_Id) || !/^(?!.*000).+$/.test(this.input_Emp_Id)) {
                     this.id_Error = true;
+                    hasError = true;
+                } else {
+                    this.id_Error = false;
                 }
-            },
-            check_Emp_Name() {
+
                 if (!/^[一-龯ぁ-んァ-ヶー]*$/.test(this.input_Emp_Name)) {
                     this.name_Error = true;
+                    hasError = true;
                 } else {
                     this.name_Error = false;
                 }
-            },
 
-            DELETE() {
-                this.birth = this.selected_Year + '/' + this.selected_Month + '/' + this.selected_Day;
-                this.$router.push({ name: 'dele_Confi', params: { emp_Id: this.input_Emp_Id, emp_Name: this.input_Emp_Name,birth: this.birth } });
+                if (!hasError) {
+                    this.$router.push({ name: 'dele_Confi', params: { emp_Id: this.input_Emp_Id, emp_Name: this.input_Emp_Name, birth: birth } });
+                }
             },
         }
     }

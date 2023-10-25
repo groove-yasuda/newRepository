@@ -7,7 +7,6 @@
                 <p>確認画面</p>
                 <p>以下の社員情報を削除します。</p>
                 <p>間違いがなければ確認ボタンを押してください</p>
-                <p v-if="error_Message" class="error-message">{{ error_Message }}</p>
                 <p class="text-center" :style="{'color': 'black'}">社員ID : {{ emp_Id }}</p>
                 <p class="text-center" :style="{'color': 'black'}">社員名 : {{ emp_Name }}</p>
                 <p class="text-center" :style="{'color': 'black'}">生年月日 : {{ birth }}</p>
@@ -36,7 +35,6 @@
     export default {
         data() {
             return {
-                error_Message: '',
                 emp_Id: '', // 社員IDを保持するデータ
                 emp_Name: '', // 社員名を保持するデータ
                 birth: '', // 生年月日を保持するデータ
@@ -68,8 +66,8 @@
                             this.$router.push({ name: 'dele_Comp' });
                         }
                         else if (response.data === false) {
-                            this.error_Message = '入力された社員情報は登録されていません。';
-                            this.$router.push({ name: 'dele_Confi' });
+                            const error_Message = '入力された社員情報は登録されていません。';
+                            this.$router.push({ name: 'dele_Inp', params: { error_Message: error_Message } });
                         }
 
                     })

@@ -8,69 +8,52 @@
                 <p>社員情報入力画面</p>
 
 
-                <v-text-field label="社員ID" clearable v-model="input_Emp_Id" @input="check_Emp_Id" counter="4"
-                              hint=" 社員IDをA001～Z999の間の半角英数字で入力して下さい。
-                              *社員IDは大文字のアルファベット＋三桁の数字の組み合わせです"
-                              :rules="[id_Max_Char]" class="custom-Hint-Style"></v-text-field>
-                <p v-if="id_Error && input_Emp_Id" class="error-Message">有効な社員IDを入力してください。</p>
 
-                <v-text-field label="社員名" clearable v-model="input_Emp_Name" @input="check_Emp_Name" counter="255"
-                              hint="社員名を255文字以内の全角文字で入力して下さい"
-                              :rules="[name_Max_Char]" class="custom-Hint-Style"></v-text-field>
-                <p v-if="name_Error" class="error-Message">有効な社員名を入力してください。</p>
+                <input-field label="社員ID" v-model="input_Emp_Id" :hint="Id_Hint" :error="id_Error" />
+                <input-field label="社員名" v-model="input_Emp_Name" :hint="Name_Hint" :error="name_Error" />
+                <p v-if="error_Message" class="error-message">{{ error_Message }}</p>
 
 
                 <br>
                 <v-row justify="center">
                     <div>
-                        <label for="year">生年月日:</label>
-                        <select v-model="selected_Year" id="year" class="select-Dropdown">
-                            <option v-for="year in year_Range" :value="year" :key="year">{{ year }}</option>
-                        </select>年
-
-                        <label for="month"></label>
-                        <select v-model="selected_Month" id="month" class="select-Dropdown">
-                            <option v-for="month in months" :value="month" :key="month">{{ month }}</option>
-                        </select>月
-
-                        <label for="day"></label>
-                        <select v-model="selected_Day" id="day" class="select-Dropdown">
-                            <option v-for="day in day_Range" :value="day" :key="day">{{ day }}</option>
-                        </select>日
-
+                        <select_Dropdown v-model="selected_Year"
+                                         label="生年月日:" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="year_Range" />
+                    </div>
+                    <div>
+                        <select_Dropdown v-model="selected_Month"
+                                         label="/" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="months" />
+                    </div>
+                    <div>
+                        <select_Dropdown v-model="selected_Day"
+                                         label="/" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="day_Range" />
                     </div>
                     &nbsp;&nbsp;&nbsp;
                     <div>
-                        <label for="age">年齢:</label>
-                        <select v-model="selected_Age" id="age" class="select-Dropdown">
-                            <option v-for="age in age_Range" :value="age" :key="age">{{ age }} 歳</option>
-                        </select>
-                    </div>
-                    &nbsp;&nbsp;&nbsp;
-                    <div>
-                        <label for="age">性別:</label>
-                        <select v-model="selected_Gender" id="gender" class="select-Dropdown">
-                            <option v-for="gender in gender_Option" :value="gender" :key="gender">{{ gender }}</option>
-                        </select>
+                        <select_Dropdown v-model="selected_Gender"
+                                         label="性別:" id="mySelect"
+                                         selectClass="select-Dropdown"
+                                         :options="gender_Option" />
                     </div>
                 </v-row>
                 <br><br>
 
-                <v-text-field label="基本給" clearable v-model="input_Basic_Salary" @input="check_Basic_Salary"
-                              hint=" 半角数字で入力して下さい"
-                              class="custom-Hint-Style"></v-text-field>
-                <p v-if="basic_Salary_Error" class="error-Message">有効な値を入力してください。</p>
 
-                <v-text-field label="交通費" clearable v-model="input_Transport_Expens" @input="check_Transport_Expens"
-                              hint="半角数字で入力して下さい"
-                              class="custom-Hint-Style"></v-text-field>
-                <p v-if="transport_Expens_Error" class="error-Message">有効な値を入力してください。</p>
+                <input-field label="基本給" v-model="input_Basic_Salary" :hint="numbers_Hint" :error="basic_Salary_Error" />
+                <input-field label="交通費" v-model="input_Transport_Expens" :hint="numbers_Hint" :error="transport_Expens_Error" />
+
                 <br><br>
 
 
                 <v-row justify="center">
                     <v-col cols="auto">
-                        <v-btn v-on:click="INSERT" :disabled="!input_Emp_Id || !input_Emp_Name || !input_Basic_Salary || !input_Transport_Expens || !id_Error == false || !name_Error == false">登録</v-btn>
+                        <v-btn v-on:click="INSERT">登録</v-btn>
                     </v-col>
                 </v-row>
 
@@ -97,37 +80,47 @@
         border-radius: 4px; /* 角を丸くすることで視覚的に魅力的になります */
         background-color: white; /* 背景色を白に設定します */
         font-size: 18px; /* フォントサイズを調整できます */
-        width: 65px; /* 幅を調整できます */
+        width: 80px; /* 幅を調整できます */
     }
-    .custom-Hint-Style .v-messages__message {
-        font-size: 11px; /* ヒントの文字サイズを設定 */
-        color: #333;
-    }
-
 </style>
 
 <script>
+    import InputField from '@/components/input_Field.vue';
+    import select_Dropdown from '@/components/select_Dropdown.vue';
+
     export default {
+        components: {
+            InputField,
+            select_Dropdown,
+        },
         data() {
             return {
+                Id_Hint: '社員IDをA001～Z999の間の半角英数字で入力して下さい * 社員IDは大文字のアルファベット＋三桁の数字の組み合わせです',
+                Name_Hint: '社員名を255文字以内の全角文字で入力して下さい',
+                numbers_Hint :'半角数字で入力して下さい',
                 input_Emp_Id: '',
                 id_Error: false,
-                input_Emp_Name: '', 
+                input_Emp_Name: '',
                 name_Error: false,
                 input_Basic_Salary: '',
                 basic_Salary_Error: false,
                 input_Transport_Expens: '',
                 transport_Expens_Error: false,
                 years: [1990], // 生年月日の年の選択肢
-                months: [1,2,3,4,5,6,7,8,9,10,11,12], // 生年月日の月の選択肢
+                months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // 生年月日の月の選択肢
                 days: [1], // 生年月日の日の選択肢
                 selected_Year: 2000, // 選択された年
                 selected_Month: 1, // 選択された月
                 selected_Day: 1, // 選択された日
-                selected_Age: 18,//選択された年齢
+                selected_Age:20,
                 selected_Gender: '男性',
                 gender_Option: ['男性', '女性'],
+                error_Message:'',
             };
+        },
+        created() {
+            // ルーターからパラメータを取得してデータに代入
+            this.error_Message = this.$route.params.error_Message;
         },
         computed: {
             year_Range() {
@@ -135,80 +128,53 @@
                 const start_Year = current_Year - 100; // 100年分の範囲を生成
                 return Array.from({ length: 101 }, (_, i) => start_Year + i);
             },
-            age_Range() {
-                // 年齢の範囲を設定します
-                const min_Age = 1;
-                const max_Age = 100;
-
-                // 年齢の範囲から選択肢の配列を生成します
-                const range = [];
-                for (let age = min_Age; age <= max_Age; age++) {
-                    range.push(age);
-                }
-
-                return range;
-            },
             day_Range() {
                 return Array.from({ length: 31 }, (_, i) => i + 1); // 日の選択肢を1から31まで生成
             },
         },
         methods: {
-            id_Max_Char(value) {
-                if (value.length <= 4) {
-                    return true;
+            INSERT() {
+                const birth = this.selected_Year + '/' + this.selected_Month + '/' + this.selected_Day;
+                let hasError = false; 
+
+                if (!/^[A-Z]{1}[0-9]{3}$/.test(this.input_Emp_Id) || !/^(?!.*000).+$/.test(this.input_Emp_Id)) {
+                    this.id_Error = true;
+                    hasError = true;
                 } else {
-                    return '社員IDは4文字で入力してください';
+                    this.id_Error = false;
                 }
-            },
-            name_Max_Char(value) {
-                if (value.length <= 255) {
-                    return true; 
-                } else {
-                    return '社員名は255文字以下で入力してください'; 
-                }
-            },
-            check_Emp_Id() {
-                if (!/^[一-龯ぁ-んァ-ヶー]*$/.test(this.input_Emp_Id)) {
-                    if (!/[A-Z]{1}[0-9]{3}/.test(this.input_Emp_Id) || !/^(?!.*000).+$/.test(this.input_Emp_Id)) {
-                        this.id_Error = true;
-                    } else {
-                        this.id_Error = false;
-                    }
-                } else {
-                this.id_Error = true;
-            }
-            },
-            check_Emp_Name() {
+
                 if (!/^[一-龯ぁ-んァ-ヶー]*$/.test(this.input_Emp_Name)) {
                     this.name_Error = true;
+                    hasError = true;
                 } else {
                     this.name_Error = false;
                 }
-            },
-            check_Basic_Salary() {
+
                 if (!/^[0-9]*$/.test(this.input_Basic_Salary)) {
                     this.basic_Salary_Error = true;
+                    hasError = true;
                 } else {
                     this.basic_Salary_Error = false;
                 }
-            },
-            check_Transport_Expens() {
+
                 if (!/^[0-9]*$/.test(this.input_Transport_Expens)) {
                     this.transport_Expens_Error = true;
+                    hasError = true;
                 } else {
                     this.transport_Expens_Error = false;
                 }
-            },
-            INSERT() {
-                const birth = this.selected_Year + '/' + this.selected_Month + '/' + this.selected_Day;
-                this.$router.push({
-                    name: 'ins_Confi', params: {
-                        emp_Id: this.input_Emp_Id, emp_Name: this.input_Emp_Name,
-                        birth: birth, age: this.selected_Age, gender: this.selected_Gender,
-                        basic_Salary: this.input_Basic_Salary,transport_Expens: this.input_Transport_Expens,
-                    }
-                });
-            },
+
+                if (!hasError) {
+                    this.$router.push({
+                        name: 'ins_Confi', params: {
+                            emp_Id: this.input_Emp_Id, emp_Name: this.input_Emp_Name,
+                            birth: birth, age: this.selected_Age, gender: this.selected_Gender,
+                            basic_Salary: this.input_Basic_Salary, transport_Expens: this.input_Transport_Expens,
+                        }
+                    });
+                }
+            }
         },
         }
 

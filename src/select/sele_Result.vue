@@ -8,6 +8,11 @@
 
 
                 <template>
+                    <p v-if="isLoading && !is_Condition_Met">
+                        ローディング中...
+                    </p>
+
+
                     <p v-if="is_Condition_Met">
                         <v-container>
 
@@ -36,7 +41,6 @@
                             </v-data-table>
                         </v-container>
                     </p>
-                    <p v-else>検索結果が存在しません</p>
                 </template>
 
             </v-container>
@@ -91,17 +95,20 @@
                 input_Emp_Search: '', 
                 search_Target: '',
                 response_Data: [],
-                is_Condition_Met: false,
+                is_Condition_Met:"",
+                isLoading: true,
                 desserts: [],
                 headers: [
                     {text: '社員ID'},
                     { text: '社員名' },
                     { text: '詳細' },
                 ],
+                error_Message: '',
             };
         },
         created() {
             // ルーターからパラメータを取得してデータに代入
+            this.error_Message = this.$route.params.error_Message;
             this.search_Prime = this.$route.params.search_Prime;
             this.search_Option = this.$route.params.search_Option;
             this.id_Order = this.$route.params.id_Order;
@@ -110,6 +117,8 @@
             this.search_Target = this.$route.params.search_Target;
         },
         mounted() {
+            this.isLoading = true;
+            this.is_Condition_Met = false;
             axios
                 .request({
                     method: 'POST',
@@ -124,19 +133,27 @@
                     }
                 })
                 .then((response) => {
+                    console.log(response.data);
+                    if (response.data == '') {
+                        const error_Message = '検索結果が存在しません';
+                        this.$router.push({ name: 'sele_Inp', params: { error_Message: error_Message } });
 
-                    this.desserts = response.data.map((item) => {
-                        const parts = item.split(", ");
-                        const syainID = parts[0].split("=")[1];
-                        const syainNAME = parts[1].split("=")[1];
-                        this.is_Condition_Met = true;
 
-                        return {
-                            '社員ID': syainID,
-                            '社員名': syainNAME
+                    } else {
+                        this.desserts = response.data.map((item) => {
+                            const parts = item.split(", ");
+                            const syainID = parts[0].split("=")[1];
+                            const syainNAME = parts[1].split("=")[1];
+                            this.isLoading = false;
+                            this.is_Condition_Met = true;
 
-                        };
-                    });
+                            return {
+                                '社員ID': syainID,
+                                '社員名': syainNAME
+
+                            };
+                        });
+                    }
 
                 })
         },
@@ -146,8 +163,6 @@
                 this.$router.push({ name: 'sele_Inp' });
             },
             onButtonClick(item) {
-                const syainID = item['社員ID'];
-                console.log('クリックされた行の社員ID:', syainID);
                 this.$router.push({
                     name: 'sele_Detail', params: {
                         syainID: item['社員ID'], search_Prime: this.search_Prime, search_Option: this.search_Option,

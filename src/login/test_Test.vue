@@ -1,15 +1,9 @@
 ﻿<template>
     <div>
-        <v-text-field label="社員ID"
-                      clearable
-                      v-model="inputEmpId"
-                      @input="checkEmpId"
-                      counter="4"
-                      hint="社員IDをA001～Z999の間の半角英数字で入力して下さい。"
-                      class="custom-hint-style"></v-text-field>
-        <p v-if="idError" class="error-message">有効な社員IDを入力してください。</p>
-
-        <v-btn @click="INSERT" :disabled="isButtonDisabled">登録</v-btn>
+        <br><br><br><br><br>
+        <input v-model="textInput" />
+        <button @click="validateAndProceed">次へ</button>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
 </template>
 
@@ -17,36 +11,40 @@
     export default {
         data() {
             return {
-                inputEmpId: "",
-                idError: false
+                textInput: "",
+                errorMessage: ""
             };
         },
-        computed: {
-            isButtonDisabled() {
-                return (
-                    this.inputEmpId.length < 4 ||
-                    this.idError ||
-                    this.inputEmpId === "" ||
-                    this.inputEmpId.length < 3
-                );
-            }
-        },
         methods: {
-            checkEmpId() {
-                this.idError = false; // エラーメッセージを初期化
-                if (this.inputEmpId.length >= 1 && this.inputEmpId.length <= 3) {
-                    this.isButtonDisabled = true; // 1~3文字の時にボタンを非活性化
+            validateAndProceed() {
+                // バリデーションメソッドを呼び出す
+                const validationResult = this.validateInput(this.textInput);
+
+                if (validationResult === "valid") {
+                    // バリデーションに合格した場合、次の画面に遷移
+                    this.$router.push("/next-page");
                 } else {
-                    // それ以外の場合にエラーチェック
-                    if (!/^[A-Z]{1}[0-9]{3}$/.test(this.inputEmpId) || /^(?!.*000).+$/.test(this.inputEmpId)) {
-                        this.idError = true;
-                    }
-                    this.isButtonDisabled = false; // ボタンを活性化
+                    // エラーがある場合、エラーメッセージを設定
+                    this.errorMessage = validationResult;
                 }
             },
-            INSERT() {
-                // 登録処理
+            validateInput(input) {
+                // ここで文字数や形式のバリデーションを行う
+                // エラーがない場合は "valid" を返し、エラーがある場合はエラーメッセージを返す
+                if (input.length < 5) {
+                    return "文字数が短すぎます";
+                } else if (!/^[0-9]+$/.test(input)) {
+                    return "数字のみが許可されています";
+                } else {
+                    return "valid";
+                }
             }
         }
     };
 </script>
+
+<style>
+    .error-message {
+        color: red;
+    }
+</style>

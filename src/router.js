@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Sel from './components/sel_Func.vue'
 import ins_Inp from './insert/ins_Inp.vue'
 import ins_Confi from './insert/ins_Confi.vue'
 import ins_Comp from './insert/ins_Comp.vue'
@@ -24,11 +23,6 @@ const routes = [
         path: '/',
         name: 'user_Login',
         component: user_Login
-    },
-    {
-        path: '/sel',
-        name: 'sel',
-        component: Sel
     },
     {
         path: '/ins_inp',

@@ -85,8 +85,8 @@
                             this.$router.push({ name: 'ins_Comp' });
                         }
                         else if (response.data === false) {
-                            this.error_Message = '入力された社員IDはすでに登録されています。';
-                            this.$router.push({ name: 'ins_Confi' });
+                            const error_Message = '入力された社員IDはすでに登録されています。';
+                            this.$router.push({ name: 'ins_Inp', params: { error_Message: error_Message } });
                         }
 
                     })

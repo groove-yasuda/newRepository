@@ -10,6 +10,7 @@
                 <template>
                     <p v-if="isLoading && !is_Condition_Met">
                         ローディング中...
+                        <v-progress-circular color="primary" indeterminate></v-progress-circular>
                     </p>
 
                     <p v-if="is_Condition_Met">
@@ -18,15 +19,10 @@
                                 <v-col cols="12">
                                     <v-data-table :headers="headers"
                                                   :items="desserts"
-                                                  :items-per-page="items_Per_Page"
                                                   class="elevation-10"
                                                   height="100px"
-                                                  :footer-props="{
-                                          showFirstLastPage: true,
-                                          firstIcon: 'mdi-arrow-collapse-left',
-                                          lastIcon: 'mdi-arrow-collapse-right',
-                                          prevIcon: 'mdi-minus',
-                                          nextIcon: 'mdi-plus'}">
+                                                  :footer-props="{itemsPerPageOptions: []}"
+                                                  >
 
 
                                         <template v-slot:item="{ item }">
@@ -129,6 +125,7 @@
                 search_Target: '',
                 response_Data: [],
                 syainID: '',
+                page: '',
                 is_Condition_Met: '',
                 isLoading: true,
                 desserts: [],
@@ -208,6 +205,7 @@
             this.name_Order = this.$route.params.name_Order;
             this.input_Emp_Search = this.$route.params.input_Emp_Search;
             this.search_Target = this.$route.params.search_Target;
+            this.page = this.$route.params.page;
         },
         mounted() {
             axios
@@ -345,15 +343,15 @@
                     name: 'sele_Result', params: {
                         search_Prime: this.search_Prime, search_Option: this.search_Option,
                         id_Order: this.id_Order, name_Order: this.name_Order,
-                        input_Emp_Search: this.input_Emp_Search, search_Target: this.search_Target
+                        input_Emp_Search: this.input_Emp_Search, search_Target: this.search_Target, page: this.page
                     }
                 });
             },
             custom_Renderer(instance, td) {
                 Handsontable.renderers.TextRenderer.apply(this, arguments);
                 td.className = 'custom-cell'; 
-                td.style.backgroundColor = 'gray'; 
-                td.style.color = 'black'; 
+                td.style.backgroundColor = '#2196F3';
+                td.style.color = 'white'; 
                 td.style.fontSize = '20px';
             },
             custom_Karam_Renderer(instance, td) {

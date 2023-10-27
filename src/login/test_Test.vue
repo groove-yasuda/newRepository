@@ -1,49 +1,40 @@
 ﻿<template>
-    <div>
-        <br><br><br><br><br>
-        <input v-model="textInput" />
-        <button @click="validateAndProceed">次へ</button>
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-    </div>
+    <v-app>
+        <v-main>
+            <v-container>
+
+                <p>社員情報登録</p>
+                <p>社員情報入力画面</p>
+
+
+                <br>
+                <v-row justify="center" class="a">
+                    <p>社員情報入力画面</p>
+                </v-row>
+                <br><br>
+
+                <v-row justify="center" class="a">
+                    <v-col cols="auto" class="a">
+                        <v-btn v-on:click="INSERT">登録</v-btn>
+                    </v-col>
+                </v-row>
+
+
+            </v-container>
+
+
+
+        </v-main>
+    </v-app>
 </template>
 
-<script>
-    export default {
-        data() {
-            return {
-                textInput: "",
-                errorMessage: ""
-            };
-        },
-        methods: {
-            validateAndProceed() {
-                // バリデーションメソッドを呼び出す
-                const validationResult = this.validateInput(this.textInput);
 
-                if (validationResult === "valid") {
-                    // バリデーションに合格した場合、次の画面に遷移
-                    this.$router.push("/next-page");
-                } else {
-                    // エラーがある場合、エラーメッセージを設定
-                    this.errorMessage = validationResult;
-                }
-            },
-            validateInput(input) {
-                // ここで文字数や形式のバリデーションを行う
-                // エラーがない場合は "valid" を返し、エラーがある場合はエラーメッセージを返す
-                if (input.length < 5) {
-                    return "文字数が短すぎます";
-                } else if (!/^[0-9]+$/.test(input)) {
-                    return "数字のみが許可されています";
-                } else {
-                    return "valid";
-                }
-            }
-        }
-    };
-</script>
 
 <style>
+    .a{
+        width: 80%;
+        color: red;
+    }
     .error-message {
         color: red;
     }

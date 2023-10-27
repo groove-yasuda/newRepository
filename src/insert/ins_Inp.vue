@@ -17,29 +17,17 @@
                 <br>
                 <v-row justify="center">
                     <div>
-                        <select_Dropdown v-model="selected_Year"
-                                         label="生年月日:" id="mySelect"
-                                         selectClass="select-Dropdown"
-                                         :options="year_Range" />
+                        <select_Dropdown v-model="selected_Year" label="生年月日:" id="mySelect" selectClass="select-Dropdown" :options="year_Range" />
                     </div>
                     <div>
-                        <select_Dropdown v-model="selected_Month"
-                                         label="/" id="mySelect"
-                                         selectClass="select-Dropdown"
-                                         :options="months" />
+                        <select_Dropdown v-model="selected_Month" label="/" id="mySelect" selectClass="select-Dropdown" :options="months" />
                     </div>
                     <div>
-                        <select_Dropdown v-model="selected_Day"
-                                         label="/" id="mySelect"
-                                         selectClass="select-Dropdown"
-                                         :options="day_Range" />
+                        <select_Dropdown v-model="selected_Day" label="/" id="mySelect" selectClass="select-Dropdown" :options="day_Range" />
                     </div>
                     &nbsp;&nbsp;&nbsp;
                     <div>
-                        <select_Dropdown v-model="selected_Gender"
-                                         label="性別:" id="mySelect"
-                                         selectClass="select-Dropdown"
-                                         :options="gender_Option" />
+                        <select_Dropdown v-model="selected_Gender" label="性別:" id="mySelect" selectClass="select-Dropdown" :options="gender_Option" />
                     </div>
                 </v-row>
                 <br><br>

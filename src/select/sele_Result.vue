@@ -10,24 +10,16 @@
                 <template>
                     <p v-if="isLoading && !is_Condition_Met">
                         ローディング中...
+                        <v-progress-circular color="primary" indeterminate></v-progress-circular>
                     </p>
-
 
                     <p v-if="is_Condition_Met">
                         <v-container>
 
-                            <v-data-table :headers="headers"
-                                          :items="desserts"
-                                          :items-per-page="items_Per_Page"
-                                          class="elevation-10"
-                                          height="600px"
-                                          :footer-props="{
-                                          showFirstLastPage: true,
-                                          firstIcon: 'mdi-arrow-collapse-left',
-                                          lastIcon: 'mdi-arrow-collapse-right',
-                                          prevIcon: 'mdi-minus',
-                                          nextIcon: 'mdi-plus'}">
-
+                            <v-data-table :headers="headers" :items="desserts" :items-per-page="items_Per_Page" 
+                                          class="elevation-10" height="600px" :page.sync="page" 
+                                          :footer-props="{ showFirstLastPage: true, firstIcon: 'mdi-arrow-collapse-left',
+                                          lastIcon: 'mdi-arrow-collapse-right', prevIcon: 'mdi-minus', nextIcon: 'mdi-plus'}">
 
                                 <template v-slot:item="{ item }">
                                     <tr>
@@ -87,6 +79,7 @@
     export default {
         data() {
             return {
+                page: 1,
                 items_Per_Page: 5,
                 search_Prime: '',
                 search_Option: '',
@@ -115,6 +108,7 @@
             this.name_Order = this.$route.params.name_Order;
             this.input_Emp_Search = this.$route.params.input_Emp_Search;
             this.search_Target = this.$route.params.search_Target;
+            this.page = this.$route.params.page;
         },
         mounted() {
             this.isLoading = true;
@@ -167,7 +161,7 @@
                     name: 'sele_Detail', params: {
                         syainID: item['社員ID'], search_Prime: this.search_Prime, search_Option: this.search_Option,
                         id_Order: this.id_Order, name_Order: this.name_Order,
-                        input_Emp_Search: this.input_Emp_Search, search_Target: this.search_Target
+                        input_Emp_Search: this.input_Emp_Search, search_Target: this.search_Target, page: this.page
                     }
                 });
             },

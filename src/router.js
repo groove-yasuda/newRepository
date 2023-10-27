@@ -13,17 +13,11 @@ import dele_Comp from './delete/dele_Comp.vue'
 import sele_Inp from './select/sele_Inp.vue'
 import sele_Result from './select/sele_Result.vue'
 import sele_Detail from './select/sele_Detail.vue'
-import user_Login from './login/user_Login.vue'
 import test_Test from './login/test_Test.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-    {
-        path: '/',
-        name: 'user_Login',
-        component: user_Login
-    },
     {
         path: '/ins_inp',
         name: 'ins_Inp',

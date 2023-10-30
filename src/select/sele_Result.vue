@@ -9,7 +9,7 @@
 
                 <template>
                     <p v-if="isLoading && !is_Condition_Met">
-                        ローディング中...
+                        now loading...
                         <v-progress-circular color="primary" indeterminate></v-progress-circular>
                     </p>
 

@@ -19,7 +19,7 @@
         },
         data() {
             return {
-                inputValue: this.value // プロパティの値をデータプロパティにコピー
+                inputValue: this.value
             };
         },
         methods: {

@@ -35,9 +35,9 @@
     export default {
         data() {
             return {
-                emp_Id: '', // 社員IDを保持するデータ
-                emp_Name: '', // 社員名を保持するデータ
-                birth: '', // 生年月日を保持するデータ
+                emp_Id: '',
+                emp_Name: '',
+                birth: '',
             };
         },
         created() {

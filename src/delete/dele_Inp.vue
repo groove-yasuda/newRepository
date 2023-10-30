@@ -60,12 +60,12 @@
         color: #333;
     }
     .select-Dropdown {
-        padding: 5px; /* パディングを追加して選択肢が見やすくなります */
-        border: 1px solid #ccc; /* ボーダーを追加してプルダウンの境界を明示的に表示します */
-        border-radius: 4px; /* 角を丸くすることで視覚的に魅力的になります */
-        background-color: white; /* 背景色を白に設定します */
-        font-size: 18px; /* フォントサイズを調整できます */
-        width: 65px; /* 幅を調整できます */
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 18px;
+        width: 65px;
     }
 </style>
 

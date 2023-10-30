@@ -43,7 +43,7 @@
 
 <style>
     .custom-drawer {
-        background-color: grey; /* 背景色をグレーに設定 */
-        color: white; /* 文字色を白に設定 */
+        background-color: grey;
+        color: white;
     }
 </style>

@@ -9,7 +9,7 @@
 
                 <template>
                     <p v-if="isLoading && !is_Condition_Met">
-                        ローディング中...
+                        now loading...
                         <v-progress-circular color="primary" indeterminate></v-progress-circular>
                     </p>
 
@@ -117,7 +117,6 @@
     export default {
         data() {
             return {
-                items_Per_Page: 1,
                 search_Prime: '',
                 search_Option: '',
                 id_Order: '',
@@ -178,6 +177,11 @@
                                 renderer: this.custom_Renderer,
                             };
                         }
+                        if (row === 1 || row === 3) {
+                            return {
+                                renderer: this.custom_char_Renderer,
+                            };
+                        }
                     },
                 },
                 set: {
@@ -223,10 +227,10 @@
                 })
                 .then((response) => {
                     if (response.data && "key0" in response.data && "key1" in response.data) {
-                        const data = response.data; // レスポンスデータを取得
+                        const data = response.data;
 
-                        const list_Employee_Information = data["key0"]; // "key0"のリストを取得
-                        const list_Deduction = data["key1"]; // "key1"のリストを取得
+                        const list_Employee_Information = data["key0"];
+                        const list_Deduction = data["key1"];
 
                         let sousikyu;
                         let Age;
@@ -359,6 +363,13 @@
                 td.className = 'custom-cell'; 
                 td.style.backgroundColor = 'silver'; 
                 td.style.color = 'black'; 
+                td.style.fontSize = '20px';
+            },
+            custom_char_Renderer(instance, td) {
+                Handsontable.renderers.TextRenderer.apply(this, arguments);
+                td.className = 'custom-cell';
+                td.style.backgroundColor = 'white';
+                td.style.color = 'black';
                 td.style.fontSize = '20px';
             },
         },

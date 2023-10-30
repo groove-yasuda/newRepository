@@ -43,7 +43,7 @@
         color: red;
     }
     .custom-drawer {
-        background-color: white; /* 背景色の設定 */
+        background-color: white;
     }
 </style>
 
